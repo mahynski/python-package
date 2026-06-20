@@ -28,10 +28,10 @@ Download them from Google Fonts if missing:
 
 import os
 
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 # ==== PER-REPO SETTINGS (change these) ====================================
-TITLE = 'python-package'   # repo name, printed under the badge
+TITLE = "python-package"  # repo name, printed under the badge
 
 
 def draw_hero(md, box, neon):
@@ -56,19 +56,19 @@ def draw_hero(md, box, neon):
     """
     fx0, fy0, fx1, fy1 = box
     cx, cy = (fx0 + fx1) // 2, (fy0 + fy1) // 2
-    th = int(22 * SS)                       # edge stroke width
-    r = th // 2                             # half stroke, for rounded joints
+    th = int(22 * SS)  # edge stroke width
+    r = th // 2  # half stroke, for rounded joints
 
     # Pointy-top hexagon silhouette of an isometric cube. cos(30) = 0.866.
-    rh = int((fx1 - fx0) * 0.46)            # circumradius
-    hx, hy = int(rh * 0.866), rh // 2       # horizontal / vertical half-extents
+    rh = int((fx1 - fx0) * 0.46)  # circumradius
+    hx, hy = int(rh * 0.866), rh // 2  # horizontal / vertical half-extents
     top = (cx, cy - rh)
     ur, lr = (cx + hx, cy - hy), (cx + hx, cy + hy)
     bot = (cx, cy + rh)
     ll, ul = (cx - hx, cy + hy), (cx - hx, cy - hy)
 
     # outer silhouette and the three visible interior edges (top + two lower)
-    md.line([top, ur, lr, bot, ll, ul, top], fill=neon, width=th, joint='curve')
+    md.line([top, ur, lr, bot, ll, ul, top], fill=neon, width=th, joint="curve")
     for end in (top, lr, ll):
         md.line([end, (cx, cy)], fill=neon, width=th)
 
@@ -78,35 +78,39 @@ def draw_hero(md, box, neon):
 
 
 # ==== BRAND FRAME (keep identical across repos) ===========================
-SS = 2                          # supersampling factor for crisp edges
+SS = 2  # supersampling factor for crisp edges
 W, H = 1590 * SS, 1098 * SS
 
 # palette
-BG_TOP, BG_BOT = (12, 13, 16), (6, 6, 8)            # dark canvas gradient
+BG_TOP, BG_BOT = (12, 13, 16), (6, 6, 8)  # dark canvas gradient
 LIGHT_TOP, LIGHT_BOT = (251, 251, 253), (231, 232, 236)  # light canvas gradient
-GLASS_TOP, GLASS_BOT = (34, 37, 46), (9, 10, 13)    # dark-glass badge gradient
-NEON = (134, 239, 172)          # #86efac signature neon green (hero + dark title)
-NEON_BRIGHT = (190, 250, 213)   # lighter core that sells the glow
-DEEP_GREEN = (21, 128, 61)      # #15803d title color for the light variant
+GLASS_TOP, GLASS_BOT = (34, 37, 46), (9, 10, 13)  # dark-glass badge gradient
+NEON = (134, 239, 172)  # #86efac signature neon green (hero + dark title)
+NEON_BRIGHT = (190, 250, 213)  # lighter core that sells the glow
+DEEP_GREEN = (21, 128, 61)  # #15803d title color for the light variant
 
 # badge geometry -- FIXED brand frame; identical for every repo. The central
 # glass rectangle never resizes; the hero scales to fit BADGE_INNER, the badge
 # never grows to fit the hero.
-BADGE_SIZE = 600 * SS                       # side length of the glass square
-BADGE_TOP = 165 * SS                        # distance from canvas top
-BADGE_RADIUS = 132 * SS                     # corner radius
-BADGE_X0 = W // 2 - BADGE_SIZE // 2         # centered horizontally
+BADGE_SIZE = 600 * SS  # side length of the glass square
+BADGE_TOP = 165 * SS  # distance from canvas top
+BADGE_RADIUS = 132 * SS  # corner radius
+BADGE_X0 = W // 2 - BADGE_SIZE // 2  # centered horizontally
 BADGE_Y0 = BADGE_TOP
 BADGE_X1 = BADGE_X0 + BADGE_SIZE
 BADGE_Y1 = BADGE_Y0 + BADGE_SIZE
 BADGE_BOX = [BADGE_X0, BADGE_Y0, BADGE_X1, BADGE_Y1]
-HERO_MARGIN = 118 * SS                       # inset of the hero frame from edge
-HERO_BOX = (BADGE_X0 + HERO_MARGIN, BADGE_Y0 + HERO_MARGIN,
-            BADGE_X1 - HERO_MARGIN, BADGE_Y1 - HERO_MARGIN)
+HERO_MARGIN = 118 * SS  # inset of the hero frame from edge
+HERO_BOX = (
+    BADGE_X0 + HERO_MARGIN,
+    BADGE_Y0 + HERO_MARGIN,
+    BADGE_X1 - HERO_MARGIN,
+    BADGE_Y1 - HERO_MARGIN,
+)
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-FONT_JOST = os.path.join(_HERE, 'fonts', 'Jost[wght].ttf')
-FONT_MONO = os.path.join(_HERE, 'fonts', 'SpaceMono-Regular.ttf')
+FONT_JOST = os.path.join(_HERE, "fonts", "Jost[wght].ttf")
+FONT_MONO = os.path.join(_HERE, "fonts", "SpaceMono-Regular.ttf")
 
 
 def jost(size, weight=400):
@@ -117,7 +121,7 @@ def jost(size, weight=400):
 
 def vgrad(top, bot):
     """Full-canvas vertical gradient."""
-    g = Image.new('RGB', (1, H))
+    g = Image.new("RGB", (1, H))
     for y in range(H):
         t = y / (H - 1)
         g.putpixel((0, y), tuple(int(top[i] + (bot[i] - top[i]) * t) for i in range(3)))
@@ -127,16 +131,22 @@ def vgrad(top, bot):
 def render(theme):
     """Render one variant; ``theme`` is ``'light'`` or ``'dark'``."""
     # --- canvas ---
-    if theme == 'light':
-        img = vgrad(LIGHT_TOP, LIGHT_BOT).convert('RGBA')
+    if theme == "light":
+        img = vgrad(LIGHT_TOP, LIGHT_BOT).convert("RGBA")
     else:
-        img = vgrad(BG_TOP, BG_BOT).convert('RGBA')
-        lift_mask = Image.new('L', (W, H), 0)            # soft radial pool of light
+        img = vgrad(BG_TOP, BG_BOT).convert("RGBA")
+        lift_mask = Image.new("L", (W, H), 0)  # soft radial pool of light
         ImageDraw.Draw(lift_mask).ellipse(
-            [W // 2 - 520 * SS, int(H * 0.42) - 380 * SS,
-             W // 2 + 520 * SS, int(H * 0.42) + 380 * SS], fill=70)
+            [
+                W // 2 - 520 * SS,
+                int(H * 0.42) - 380 * SS,
+                W // 2 + 520 * SS,
+                int(H * 0.42) + 380 * SS,
+            ],
+            fill=70,
+        )
         lift_mask = lift_mask.filter(ImageFilter.GaussianBlur(220 * SS))
-        img.paste(Image.new('RGBA', (W, H), (26, 40, 32, 255)), (0, 0), lift_mask)
+        img.paste(Image.new("RGBA", (W, H), (26, 40, 32, 255)), (0, 0), lift_mask)
 
     draw = ImageDraw.Draw(img)
 
@@ -145,43 +155,48 @@ def render(theme):
     # position regardless of theme, hero, or title.
 
     # --- depth behind the badge: shadow (light) or neon halo (dark) ---
-    if theme == 'light':
-        shadow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    if theme == "light":
+        shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         ImageDraw.Draw(shadow).rounded_rectangle(
             [BADGE_X0, BADGE_Y0 + 16 * SS, BADGE_X1, BADGE_Y1 + 16 * SS],
-            BADGE_RADIUS, fill=(20, 24, 30, 90))
+            BADGE_RADIUS,
+            fill=(20, 24, 30, 90),
+        )
         img.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(46 * SS)))
     else:
-        halo = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+        halo = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         ImageDraw.Draw(halo).rounded_rectangle(BADGE_BOX, BADGE_RADIUS, fill=(*NEON, 90))
         img.alpha_composite(halo.filter(ImageFilter.GaussianBlur(55 * SS)))
 
     # --- glass body (dark in BOTH themes) ---
-    mask = Image.new('L', (W, H), 0)
+    mask = Image.new("L", (W, H), 0)
     ImageDraw.Draw(mask).rounded_rectangle(BADGE_BOX, BADGE_RADIUS, fill=255)
-    img.paste(vgrad(GLASS_TOP, GLASS_BOT).convert('RGBA'), (0, 0), mask)
+    img.paste(vgrad(GLASS_TOP, GLASS_BOT).convert("RGBA"), (0, 0), mask)
 
     # --- top gloss sheen ---
-    gloss = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    gloss = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     ImageDraw.Draw(gloss).rounded_rectangle(
         [BADGE_X0, BADGE_Y0, BADGE_X1, BADGE_Y0 + int(BADGE_SIZE * 0.46)],
-        BADGE_RADIUS, fill=(255, 255, 255, 26))
+        BADGE_RADIUS,
+        fill=(255, 255, 255, 26),
+    )
     gloss = gloss.filter(ImageFilter.GaussianBlur(26 * SS))
-    img.paste(gloss, (0, 0),
-              Image.composite(gloss.getchannel('A'), Image.new('L', (W, H), 0), mask))
+    img.paste(
+        gloss, (0, 0), Image.composite(gloss.getchannel("A"), Image.new("L", (W, H), 0), mask)
+    )
 
     # --- neon hairline border ---
     draw.rounded_rectangle(BADGE_BOX, BADGE_RADIUS, outline=(*NEON, 70), width=2 * SS)
 
     # --- hero glyph + glow (drawn inside the fixed HERO_BOX) ---
-    mark = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    mark = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     draw_hero(ImageDraw.Draw(mark), HERO_BOX, NEON)
     for blur, alpha in [(34 * SS, 150), (16 * SS, 150), (6 * SS, 120)]:
         g = mark.filter(ImageFilter.GaussianBlur(blur))
-        g.putalpha(g.getchannel('A').point(lambda a: min(255, a * alpha // 255)))
+        g.putalpha(g.getchannel("A").point(lambda a, alpha=alpha: min(255, a * alpha // 255)))
         img.alpha_composite(g)
-    core = Image.new('RGBA', (W, H), (0, 0, 0, 0))   # bright inner core
-    core.paste(Image.new('RGBA', (W, H), (*NEON_BRIGHT, 255)), (0, 0), mark.getchannel('A'))
+    core = Image.new("RGBA", (W, H), (0, 0, 0, 0))  # bright inner core
+    core.paste(Image.new("RGBA", (W, H), (*NEON_BRIGHT, 255)), (0, 0), mark.getchannel("A"))
     img.alpha_composite(core.filter(ImageFilter.GaussianBlur(3 * SS)))
     img.alpha_composite(mark)
 
@@ -193,20 +208,20 @@ def render(theme):
         font = jost(size, weight=500)
     ty = BADGE_Y1 + int(108 * SS)
     tx = W // 2 - draw.textlength(TITLE, font=font) / 2
-    if theme == 'light':
+    if theme == "light":
         draw.text((tx, ty), TITLE, font=font, fill=DEEP_GREEN)
     else:
-        glow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+        glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
         ImageDraw.Draw(glow).text((tx, ty), TITLE, font=font, fill=(*NEON, 200))
         img.alpha_composite(glow.filter(ImageFilter.GaussianBlur(14 * SS)))
         draw.text((tx, ty), TITLE, font=font, fill=NEON)
 
-    out = img.convert('RGB').resize((1590, 1098), Image.LANCZOS)
-    path = f'logo-{theme}.png'
+    out = img.convert("RGB").resize((1590, 1098), Image.LANCZOS)
+    path = f"logo-{theme}.png"
     out.save(path)
-    print('saved', path)
+    print("saved", path)
 
 
-if __name__ == '__main__':
-    render('light')
-    render('dark')
+if __name__ == "__main__":
+    render("light")
+    render("dark")
