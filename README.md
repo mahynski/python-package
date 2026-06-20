@@ -11,7 +11,10 @@
 PyPI Package Template Instructions
 ===
 
-<img src="docs/_static/logo_transparent.png" align="right" width=200 />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="logo-dark.png" />
+  <img src="logo-light.png" align="right" width=200 alt="python-package logo" />
+</picture>
 
 1. Choose a name that does not exist in [pypi](https://pypi.org/). You can check by going to `https://pypi.org/simple/{my_awesome_new_package}`; a 404 means the name is available.
 2. Run the personalization script. It rewrites every place the original author's identity is baked in (package name, GitHub username, author name, email, ORCID, codecov token) and renames the `my_package/` directory in one shot:

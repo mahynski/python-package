@@ -31,7 +31,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 # ==== PER-REPO SETTINGS (change these) ====================================
-TITLE = 'template-uv-project'   # repo name, printed under the badge
+TITLE = 'python-package'   # repo name, printed under the badge
 
 
 def draw_hero(md, box, neon):
@@ -49,32 +49,32 @@ def draw_hero(md, box, neon):
     Notes
     -----
     Draw only flat ``neon`` shapes/text -- the caller blurs a copy of this
-    layer to make the glow, so no glow handling is needed here. This default
-    is the ``template-uv-project`` hero: a viewfinder/template frame (four
-    corner brackets) around a lowercase ``uv`` monogram. Replace the body for
-    other repos; keep the fill color ``neon``.
+    layer to make the glow, so no glow handling is needed here. This repo's
+    hero is an isometric box/cube (a "package"): a pointy-top hexagon
+    silhouette with three edges meeting at the front vertex. Replace the body
+    for other repos; keep the fill color ``neon``.
     """
     fx0, fy0, fx1, fy1 = box
-    arm, th, cr = int(96 * SS), int(26 * SS), int(8 * SS)
-
-    def box_sorted(x0, y0, x1, y1):
-        return [min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)]
-
-    def bracket(x, y, dx, dy):  # L bracket with its corner at (x, y)
-        md.rounded_rectangle(box_sorted(x, y, x + dx * arm, y + dy * th), cr, fill=neon)
-        md.rounded_rectangle(box_sorted(x, y, x + dx * th, y + dy * arm), cr, fill=neon)
-
-    bracket(fx0, fy0, +1, +1)
-    bracket(fx1, fy0, -1, +1)
-    bracket(fx0, fy1, +1, -1)
-    bracket(fx1, fy1, -1, -1)
-
-    font = jost(int(196 * SS), weight=600)
-    txt = 'uv'
-    tb = md.textbbox((0, 0), txt, font=font)
     cx, cy = (fx0 + fx1) // 2, (fy0 + fy1) // 2
-    md.text((cx - (tb[2] - tb[0]) // 2 - tb[0], cy - (tb[3] - tb[1]) // 2 - tb[1]),
-            txt, font=font, fill=neon)
+    th = int(22 * SS)                       # edge stroke width
+    r = th // 2                             # half stroke, for rounded joints
+
+    # Pointy-top hexagon silhouette of an isometric cube. cos(30) = 0.866.
+    rh = int((fx1 - fx0) * 0.46)            # circumradius
+    hx, hy = int(rh * 0.866), rh // 2       # horizontal / vertical half-extents
+    top = (cx, cy - rh)
+    ur, lr = (cx + hx, cy - hy), (cx + hx, cy + hy)
+    bot = (cx, cy + rh)
+    ll, ul = (cx - hx, cy + hy), (cx - hx, cy - hy)
+
+    # outer silhouette and the three visible interior edges (top + two lower)
+    md.line([top, ur, lr, bot, ll, ul, top], fill=neon, width=th, joint='curve')
+    for end in (top, lr, ll):
+        md.line([end, (cx, cy)], fill=neon, width=th)
+
+    # round every joint so strokes meet cleanly
+    for px, py in (top, ur, lr, bot, ll, ul, (cx, cy)):
+        md.ellipse([px - r, py - r, px + r, py + r], fill=neon)
 
 
 # ==== BRAND FRAME (keep identical across repos) ===========================
