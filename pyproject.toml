@@ -64,7 +64,7 @@ notebook = [
 ]
 dev = [
     "my_package[test,docs,notebook]",
-    "pre-commit>=4.6.0",
+    "pre-commit>=4.6.1",
     "mypy",
 ]
 
